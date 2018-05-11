@@ -17,8 +17,8 @@ library(Hmisc)
 
 # Data Import ---------------------------------
 #wasde <- read_csv("./Data/psd_grains_pulses.csv")
-setwd('..')
-#setwd("C:/Users/connor.189/Box Sync")
+#setwd('..')
+setwd("C:/Users/connor.189/Box Sync")
 setwd("./ERS Farm Income Forecast - Panel & ERS/farm_income_forecast")
 csh_fcst <- read_csv("./Data/forecasts_cash.csv")
 frm_fcst <- read_csv("./Data/forecasts_projection_farm.csv")
@@ -26,7 +26,7 @@ feb_18 <- read_csv("./Data/farmincome_wealthstatisticsdata_february2018.csv")
 
 ###########################################################################################
 # Code Generalization.
-j = 11                                   # j==1 means uses cash income file. Otherwise it uses farm income file
+j = 1                                   # j==1 means uses cash income file. Otherwise it uses farm income file
 if(j== 1){
   inc_fcst <- csh_fcst
 } else{
@@ -60,20 +60,20 @@ inc_fcst <- mutate(inc_fcst, t = `Reference Year` - 1974) %>%
 inc_fcst$ohio <- 0
 
 
-oh_est <- inc_fcst$ohio_estimate[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-15]    # This determines the length of time series included in the regression. This is a 15 year regression
+oh_est <- inc_fcst$ohio_estimate[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-5]    # This determines the length of time series included in the regression. This is a 15 year regression
 
-aug_est <- inc_fcst$`August (t + 1) "estimate"`[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-15]
+aug_est <- inc_fcst$`August (t + 1) "estimate"`[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-5]
 
-feb_fct <- inc_fcst$`February forecast`[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-15]
+feb_fct <- inc_fcst$`February forecast`[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-5]
 
-feb1_fct <- inc_fcst$`February(t+1) forecast`[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-15]
+feb1_fct <- inc_fcst$`February(t+1) forecast`[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-5]
 
 #dif <- inc_fcst$Diff[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-15]
 
-yr <- inc_fcst$t[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-15]
+yr <- inc_fcst$t[inc_fcst$`Reference Year` <= 2016 & inc_fcst$`Reference Year` >= 2016-5]
 
 #Test Regression
-trend <- lm(log(oh_est) ~ log(feb_fct) + lag(log(aug_est),1), data = inc_fcst)
+trend <- lm(log(oh_est) ~ log(feb_fct) + lag(log(aug_est),2), data = inc_fcst)
 summary(trend)
 
 # Five Year rolling forecast
@@ -102,16 +102,11 @@ inc_fcst$ohio[inc_fcst$`Reference Year`== 2017] <- summary(trend)$coefficients[1
 inc_fcst$ohio[inc_fcst$`Reference Year`== 2018] <- summary(trend)$coefficients[1,1] + summary(trend)$coefficients[2,1]*log(inc_fcst$`February forecast`[inc_fcst$`Reference Year` == 2018]) +
   summary(trend)$coefficients[3,1]*log(inc_fcst$`August (t + 1) "estimate"`[inc_fcst$`Reference Year` == 2016])
 
-inc_fcst <- mutate(inc_fcst, ohio_f = log(ohio))
+inc_fcst <- mutate(inc_fcst, ohio_f = exp(ohio))
 inc_fcst <- filter(inc_fcst, `Reference Year` > 1980 & `Reference Year` <= 2018)
 
 
 ggplot(data = inc_fcst) +
   geom_line(aes(x = `Reference Year`, y = ohio_estimate)) +
   geom_line(aes(x = `Reference Year`, y = ohio_f), color = "red") +
-  labs(x = "Year", y = "Net Farm Income") + 
-  theme_light() + 
-  theme(panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        #panel.grid.major = element_blank(),
-        axis.line = element_line(colour = "black"))
+  labs(x = "Year", y = "Net Farm Income")
