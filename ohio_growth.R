@@ -25,13 +25,30 @@ ohio <- filter(feb_18, State == "US")
 f_year <- 2008
 
 growth <- function(x){
+  holder <- sub("Cash receipts value, ","\\1", x)
+  holder <- sub(" , all","\\1", holder)
   g_rate <- filter(ohio, str_detect(VariableDescriptionTotal, x),
                      Year > f_year) %>%
-    mutate(grt = log(Amount) - log(lead(Amount)))
+    mutate(grt = log(Amount) - log(lead(Amount))) %>%
+    select(Year, grt)
+  names(g_rate) <- gsub("grt", holder[1], names(g_rate), fixed = TRUE)
+  return(g_rate)
 }
 
 commodities <- c("Cash receipts value, broilers , all", "Cash receipts value, chicken eggs , all", 
                  "Cash receipts value, hogs , all", "Cash receipts value, dairy products, all",
-                 "Cash receipts value, hay , all", "Cash receipts value, greenhouse/nursery , floricultur") %>%
+                 "Cash receipts value, hay , all",
+                 "Cash receipts value, soybeans , all", "Cash receipts value, corn , all",
+                 "Cash receipts value, wheat , all", "Cash receipts value, livestock and products , all$") %>%
   map(growth)
 
+for (i in 1:length(commodities)) {
+  if(i == 1) {
+    g_rate <- commodities[[i]]
+  } else {
+    junk <- commodities[[i]]
+    g_rate <- left_join(g_rate, junk, by = "Year")
+  }
+}
+
+write_csv(g_rate, "./FSR/CSV/g_rate.csv")
