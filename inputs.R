@@ -18,7 +18,7 @@ library(zoo)
 
 # Data Import ---------------------------------
 #setwd('..')
-#rent <- read_csv("./Data/rent.csv")
+# Data obtained from quickstats
 rent <- read_csv("./Data/rent.csv")
 wage <- read_csv("./Data/wage.csv")
 b_year <- 2012
@@ -57,3 +57,4 @@ ggplot(data = wage_cb, aes(x = Year, y = a_wge)) +
         axis.line = element_line(colour = "black"),
         axis.text=element_text(size=12),
         axis.title=element_text(size=12,face="bold"))
+ggsave(filename = "./Plots/labor.tiff", width = 10, height = 8, dpi = 300, units = "in", device='tiff')

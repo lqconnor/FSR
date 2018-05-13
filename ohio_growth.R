@@ -16,15 +16,16 @@ library(strucchange)
 library(Hmisc)
 
 # Data Import ---------------------------------
-#setwd('..')
-setwd("C:/Users/connor.189/Box Sync")
-feb_18 <- read_csv("./ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/farmincome_wealthstatisticsdata_february2018.csv")
+feb_18 <- read_csv("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/farmincome_wealthstatisticsdata_february2018.csv")
 
 ###########################################################################################
 ohio <- filter(feb_18, State == "US")
 f_year <- 2008
 
 growth <- function(x){
+  # The growth function takes the variable descriptor for the farm income and wealth
+  # statisitcs file and calculates the year to year growth rae of that variable
+  
   holder <- sub("Cash receipts value, ","\\1", x)
   holder <- sub(" , all","\\1", holder)
   g_rate <- filter(ohio, str_detect(VariableDescriptionTotal, x),

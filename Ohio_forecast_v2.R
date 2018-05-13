@@ -17,12 +17,11 @@ library(Hmisc)
 
 # Data Import ---------------------------------
 #wasde <- read_csv("./Data/psd_grains_pulses.csv")
-setwd('..')
-#setwd("C:/Users/connor.189/Box Sync")
-setwd("./ERS Farm Income Forecast - Panel & ERS/farm_income_forecast")
-csh_fcst <- read_csv("./Data/forecasts_cash.csv")
-frm_fcst <- read_csv("./Data/forecasts_projection_farm.csv")
-feb_18 <- read_csv("./Data/farmincome_wealthstatisticsdata_february2018.csv")
+#setwd('..')
+#setwd("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast")
+csh_fcst <- read_csv("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/forecasts_cash.csv")
+frm_fcst <- read_csv("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/forecasts_projection_farm.csv")
+feb_18 <- read_csv("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/farmincome_wealthstatisticsdata_february2018.csv")
 
 ###########################################################################################
 # Code Generalization.
@@ -102,10 +101,10 @@ inc_fcst$ohio[inc_fcst$`Reference Year`== 2017] <- summary(trend)$coefficients[1
 inc_fcst$ohio[inc_fcst$`Reference Year`== 2018] <- summary(trend)$coefficients[1,1] + summary(trend)$coefficients[2,1]*log(inc_fcst$`February forecast`[inc_fcst$`Reference Year` == 2018]) +
   summary(trend)$coefficients[3,1]*log(inc_fcst$`August (t + 1) "estimate"`[inc_fcst$`Reference Year` == 2016])
 
-inc_fcst <- mutate(inc_fcst, ohio_f = log(ohio))
+inc_fcst <- mutate(inc_fcst, ohio_f = exp(ohio))
 inc_fcst <- filter(inc_fcst, `Reference Year` > 1980 & `Reference Year` <= 2018)
 
-
+#tiff(file = "temp.tiff", width = 4000, height = 4000, units = "px", res = 500)
 ggplot(data = inc_fcst) +
   geom_line(aes(x = `Reference Year`, y = ohio_estimate)) +
   geom_line(aes(x = `Reference Year`, y = ohio_f), color = "red") +
@@ -113,5 +112,9 @@ ggplot(data = inc_fcst) +
   theme_light() + 
   theme(panel.grid.minor = element_blank(),
         panel.border = element_blank(),
-        #panel.grid.major = element_blank(),
-        axis.line = element_line(colour = "black"))
+        panel.grid.major = element_blank(),
+        axis.line = element_line(colour = "black"),
+        axis.text=element_text(size=12),
+        axis.title=element_text(size=12,face="bold"))
+ggsave(filename = "./Plots/fcst_oh.tiff", width = 10, height = 8, dpi = 100, units = "in", device='tiff')
+#dev.off()

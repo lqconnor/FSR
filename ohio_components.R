@@ -16,9 +16,7 @@ library(strucchange)
 library(Hmisc)
 
 # Data Import ---------------------------------
-#setwd('..')
-setwd("C:/Users/connor.189/Box Sync")
-feb_18 <- read_csv("./ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/farmincome_wealthstatisticsdata_february2018.csv")
+feb_18 <- read_csv("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/farmincome_wealthstatisticsdata_february2018.csv")
 
 ###########################################################################################
 ohio <- filter(feb_18, State == "US")
@@ -119,6 +117,11 @@ ggplot(data = cash_lvs, aes(x = Year, y = log(Amount))) +
   geom_line() + labs(y = "Livestock")
 
 rent <- filter(ohio, str_detect(VariableDescriptionTotal, "Other farm income, net rent, excluding share rent"),
+               Year >= f_year)
+ggplot(data = rent, aes(x = Year, y = log(Amount))) +
+  geom_line() + labs(y = "Rent")
+
+eggs <- filter(ohio, str_detect(VariableDescriptionTotal, "eggs"),
                Year >= f_year)
 ggplot(data = rent, aes(x = Year, y = log(Amount))) +
   geom_line() + labs(y = "Rent")
