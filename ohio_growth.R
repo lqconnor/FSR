@@ -24,10 +24,11 @@ f_year <- 2008
 
 growth <- function(x){
   # The growth function takes the variable descriptor for the farm income and wealth
-  # statisitcs file and calculates the year to year growth rae of that variable
+  # statisitcs file and calculates the year to year growth rate of that variable
+  # The return command is necessary for the function to output the tibble list
   
   holder <- sub("Cash receipts value, ","\\1", x)
-  holder <- sub(" , all","\\1", holder)
+  holder <- sub(" , all","\\1", holder)     # strips the parts of the commodity desription that is the same and keeps only the unique part
   g_rate <- filter(ohio, str_detect(VariableDescriptionTotal, x),
                      Year > f_year) %>%
     mutate(grt = log(Amount) - log(lead(Amount))) %>%
@@ -38,11 +39,12 @@ growth <- function(x){
 
 commodities <- c("Cash receipts value, broilers , all", "Cash receipts value, chicken eggs , all", 
                  "Cash receipts value, hogs , all", "Cash receipts value, dairy products, all",
-                 "Cash receipts value, hay , all",
-                 "Cash receipts value, soybeans , all", "Cash receipts value, corn , all",
-                 "Cash receipts value, wheat , all", "Cash receipts value, livestock and products , all$") %>%
+                 "Cash receipts value, hay , all", "Cash receipts value, soybeans , all", 
+                 "Cash receipts value, corn , all", "Cash receipts value, wheat , all", 
+                 "Cash receipts value, livestock and products , all$") %>%
   map(growth)
 
+# This combines the growth rate columns into one tibble
 for (i in 1:length(commodities)) {
   if(i == 1) {
     g_rate <- commodities[[i]]
@@ -52,4 +54,4 @@ for (i in 1:length(commodities)) {
   }
 }
 
-write_csv(g_rate, "./FSR/CSV/g_rate.csv")
+write_csv(g_rate, "./CSV/g_rate.csv")

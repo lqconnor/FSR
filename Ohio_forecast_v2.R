@@ -106,15 +106,16 @@ inc_fcst <- filter(inc_fcst, `Reference Year` > 1980 & `Reference Year` <= 2018)
 
 #tiff(file = "temp.tiff", width = 4000, height = 4000, units = "px", res = 500)
 ggplot(data = inc_fcst) +
-  geom_line(aes(x = `Reference Year`, y = ohio_estimate)) +
-  geom_line(aes(x = `Reference Year`, y = ohio_f), color = "red") +
+  geom_line(aes(x = `Reference Year`, y = ohio_estimate), size = 1) +
+  geom_line(aes(x = `Reference Year`, y = ohio_f), color = "red", linetype = 2, size = 1.5) +
   labs(x = "Year", y = "Net Farm Income") + 
   theme_light() + 
   theme(panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         panel.grid.major = element_blank(),
         axis.line = element_line(colour = "black"),
-        axis.text=element_text(size=12),
-        axis.title=element_text(size=12,face="bold"))
+        axis.text=element_text(size=14),
+        axis.title=element_text(size=14,face="bold"))
 ggsave(filename = "./Plots/fcst_oh.tiff", width = 10, height = 8, dpi = 100, units = "in", device='tiff')
 #dev.off()
+write_csv(inc_fcst, "./Data/inc_fcst.csv")

@@ -31,15 +31,15 @@ rent_oh$rent <- as.numeric(rent_oh$rent)
 #rent_oh$Year <- as.numeric(rent_oh$Year)
 
 ggplot(data = rent_oh, aes(x = Year, y = rent)) +
-  geom_line() + labs(y = "Cropland Rent Per Acre") +
+  geom_line() + labs(y = "Cropland Rent Per Acre in Dollars") +
   theme_light() + 
   theme(panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         panel.grid.major = element_blank(),
         axis.line = element_line(colour = "black"),
-        axis.text=element_text(size=12),
-        axis.title=element_text(size=12,face="bold"))
-
+        axis.text=element_text(size=24),
+        axis.title=element_text(size=24,face="bold"))
+ggsave(filename = "./Plots/rent.tiff", width = 10, height = 8, dpi = 300, units = "in", device='tiff')
 
 wage_cb <- group_by(wage, Year) %>%
   mutate(a_wge = mean(Value)) %>%
@@ -49,7 +49,7 @@ wage_cb <- group_by(wage, Year) %>%
   distinct()
 
 ggplot(data = wage_cb, aes(x = Year, y = a_wge)) +
-  geom_line() + labs(y = "Hired Labor Wage Rate") +
+  geom_line() + labs(y = "Hired Labor Wage Rate in Dollars") +
   theme_light() + 
   theme(panel.grid.minor = element_blank(),
         panel.border = element_blank(),

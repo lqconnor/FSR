@@ -19,8 +19,8 @@ library(Hmisc)
 feb_18 <- read_csv("../ERS Farm Income Forecast - Panel & ERS/farm_income_forecast/Data/farmincome_wealthstatisticsdata_february2018.csv")
 
 ###########################################################################################
-ohio <- filter(feb_18, State == "US")
-f_year <- 2012
+ohio <- filter(feb_18, State == "OH")
+f_year <- 2000
 
 expenses <- filter(ohio, str_detect(VariableDescriptionTotal, "Production expenses, operating expenses, excl"),
                    Year >= f_year)
@@ -31,6 +31,22 @@ ggplot(data = expenses, aes(x = Year, y = log(Amount))) +
         panel.border = element_blank(),
         #panel.grid.major = element_blank(),
         axis.line = element_line(colour = "black"))
+
+expenses_all <- filter(ohio, str_detect(VariableDescriptionTotal, "Production expenses, all, excl"),
+                   Year >= f_year)
+expenses_all <- select(expenses_all, Year, State, VariableDescriptionTotal, Amount)
+write_csv(expenses_all, "./CSV/expenses.csv")
+
+ggplot(data = expenses_all, aes(x = Year, y = Amount/1000000)) +
+  geom_line() + labs(y = "Total Production Expenses") +
+  theme_light() + 
+  theme(panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.line = element_line(colour = "black"),
+        axis.text=element_text(size=24),
+        axis.title=element_text(size=24,face="bold"))
+ggsave(filename = "./Plots/expenses.tiff", width = 10, height = 8, dpi = 300, units = "in", device='tiff')
 
 fertilizer <- filter(ohio, str_detect(VariableDescriptionTotal, "fertilizer"),
                      Year >= f_year)
@@ -51,6 +67,12 @@ oil <- filter(ohio, str_detect(VariableDescriptionTotal, "Intermediate product e
                Year >= f_year)
 ggplot(data = oil, aes(x = Year, y = log(Amount))) +
   geom_line() + labs(y = "Oil")
+
+int_exp <- filter(ohio, str_detect(VariableDescriptionTotal, "Intermediate product expenses, all, excl"),
+              Year >= f_year)
+ggplot(data = int_exp, aes(x = Year, y = log(Amount))) +
+  geom_line() + labs(y = "Intermediate Expenses")
+
 
 labor <- filter(ohio, str_detect(VariableDescriptionTotal, "Labor expenses, all, contract and hired labor expenses"),
               Year >= f_year)
